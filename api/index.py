@@ -1,9 +1,13 @@
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
-from app.main import app
-from mangum import Mangum
+from app.main import app as _fastapi_app
 
-# api_gateway_base_path strips "/api" before FastAPI sees the request,
-# so the existing route "/generate" matches without any router changes.
-handler = Mangum(app, lifespan="off", api_gateway_base_path="/api")
+
+async def app(scope, receive, send):
+    """ASGI wrapper that strips the /api prefix before forwarding to FastAPI."""
+    if scope["type"] == "http":
+        path = scope.get("path", "")
+        if path.startswith("/api"):
+            scope = {**scope, "path": path[4:] or "/", "raw_path": (path[4:] or "/").encode()}
+    await _fastapi_app(scope, receive, send)
