@@ -70,9 +70,9 @@ test('3. Clicking Generate shows loading state', async ({ page }) => {
   // Check button shows "Generating..."
   await expect(button).toContainText('Generating...')
 
-  // Check right panel shows terminal cursor
-  const rightPanel = page.locator('[class*="right"], [class*="results"]')
-  await expect(rightPanel).toContainText(/cursor|loading|\|/i)
+  // Check right panel shows generating message
+  const rightPanel = page.locator('[data-testid="right-panel"]')
+  await expect(rightPanel).toContainText(/generating/i)
 })
 
 test('4. Successful response renders cards', async ({ page }) => {
@@ -131,7 +131,7 @@ test('5. Error response shows banner', async ({ page }) => {
   await button.click()
 
   // Check error banner appears (red background)
-  const errorBanner = page.locator('[class*="error"], [class*="red"], [role="alert"]')
+  const errorBanner = page.locator('[role="alert"]')
   await expect(errorBanner).toBeVisible()
 
   // Check error detail text is shown
@@ -156,7 +156,7 @@ test('6. Error banner can be dismissed', async ({ page }) => {
   await button.click()
 
   // Error banner appears
-  const errorBanner = page.locator('[class*="error"], [class*="red"], [role="alert"]')
+  const errorBanner = page.locator('[role="alert"]')
   await expect(errorBanner).toBeVisible()
 
   // Click dismiss button (close button, marked with ×)
@@ -225,7 +225,7 @@ test('9. Copy button copies code to clipboard', async ({ page, context }) => {
   await button.click()
 
   // Wait for test card to appear
-  const testCard = page.locator('[class*="group"][class*="card"], [class*="test-case"]').first()
+  const testCard = page.locator('[data-testid="test-card"]').first()
   await expect(testCard).toBeVisible()
 
   // Hover over the card to show copy button

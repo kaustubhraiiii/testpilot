@@ -75,7 +75,7 @@ function App() {
     <div className="relative z-10 min-h-screen bg-[#0d1117] text-gray-300 font-['DM_Sans',sans-serif]">
       {/* Error Banner */}
       {error && (
-        <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-red-900/80 border-b border-red-500/50 px-6 py-3 backdrop-blur-sm">
+        <div role="alert" className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-red-900/80 border-b border-red-500/50 px-6 py-3 backdrop-blur-sm">
           <span className="font-['JetBrains_Mono',monospace] text-sm text-red-300">{error}</span>
           <button
             onClick={() => setError(null)}
@@ -150,7 +150,7 @@ function App() {
         </div>
 
         {/* RIGHT PANEL */}
-        <div className="w-full lg:w-1/2 flex flex-col overflow-hidden">
+        <div data-testid="right-panel" className="w-full lg:w-1/2 flex flex-col overflow-hidden">
           <div className="px-4 py-3 border-b border-[#30363d] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-cyan-400" />
@@ -190,6 +190,7 @@ function App() {
             {result && result.test_cases.map((tc, i) => (
               <div
                 key={i}
+                data-testid="test-card"
                 className="bg-[#161b22] border border-[#30363d] rounded-lg p-4 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,255,136,0.08)] hover:border-[#00ff88]/30 group"
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
