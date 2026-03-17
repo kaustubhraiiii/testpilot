@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+httpx
+openai
+pyyaml
+slowapi
+pytest
+pytest-asyncio
+python-dotenv
