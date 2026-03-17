@@ -53,11 +53,8 @@ test('2. Button enables when textarea has content', async ({ page }) => {
 })
 
 test('3. Clicking Generate shows loading state', async ({ page }) => {
-  await page.route('http://localhost:8000/generate', async (route) => {
-    // Delay response to make loading state observable
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-    await route.abort()
-  })
+  // Never respond so the request stays pending and loading state remains observable
+  await page.route('http://localhost:8000/generate', () => {})
 
   await page.goto('/')
 
@@ -67,10 +64,10 @@ test('3. Clicking Generate shows loading state', async ({ page }) => {
   await textarea.fill('{"openapi": "3.0.0"}')
   await button.click()
 
-  // Check button shows "Generating..."
-  await expect(button).toContainText('Generating...')
+  // Button becomes disabled while loading
+  await expect(button).toBeDisabled()
 
-  // Check right panel shows generating message
+  // Right panel shows generating message
   const rightPanel = page.locator('[data-testid="right-panel"]')
   await expect(rightPanel).toContainText(/generating/i)
 })
@@ -105,7 +102,7 @@ test('4. Successful response renders cards', async ({ page }) => {
   await expect(typeBadge).toBeVisible()
 
   // Check code block
-  const codeBlock = page.locator('code, pre')
+  const codeBlock = page.locator('code').first()
   await expect(codeBlock).toContainText('test_get_users')
 
   // Check stats line
@@ -135,7 +132,7 @@ test('5. Error response shows banner', async ({ page }) => {
   await expect(errorBanner).toBeVisible()
 
   // Check error detail text is shown
-  await expect(page).toContainText(/invalid|error|detail/i)
+  await expect(page.locator('body')).toContainText(/invalid|error|detail/i)
 })
 
 test('6. Error banner can be dismissed', async ({ page }) => {
@@ -237,7 +234,7 @@ test('9. Copy button copies code to clipboard', async ({ page, context }) => {
   await copyButton.click()
 
   // Verify clipboard content
-  const clipboardText = await context.evaluate(() => {
+  const clipboardText = await page.evaluate(() => {
     return navigator.clipboard.readText()
   })
   expect(clipboardText).toContain('test_get_users')
