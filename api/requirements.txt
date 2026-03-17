@@ -1,0 +1,8 @@
+fastapi
+pydantic
+httpx
+openai
+pyyaml
+slowapi
+python-dotenv
+mangum

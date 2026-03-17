@@ -48,7 +48,7 @@ function App() {
     setResult(null)
 
     try {
-      const res = await axios.post<GenerateResponse>('http://localhost:8000/generate', {
+      const res = await axios.post<GenerateResponse>('/api/generate', {
         spec_content: specContent,
         spec_format: specFormat,
         test_framework: framework,
