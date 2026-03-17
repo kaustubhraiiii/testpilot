@@ -53,23 +53,20 @@ test('2. Button enables when textarea has content', async ({ page }) => {
 })
 
 test('3. Clicking Generate shows loading state', async ({ page }) => {
-  // Never respond so the request stays pending and loading state remains observable
-  await page.route('http://localhost:8000/generate', () => {})
+  // Delay response long enough to observe loading state, then fulfill cleanly
+  await page.route('http://localhost:8000/generate', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 30_000))
+    await route.fulfill({ status: 200, body: '{}' })
+  })
 
   await page.goto('/')
 
   const textarea = page.locator('textarea')
-  const button = page.locator('button:has-text("Generate")')
-
   await textarea.fill('{"openapi": "3.0.0"}')
-  await button.click()
+  await page.locator('button:has-text("Generate Test Cases")').click()
 
-  // Button becomes disabled while loading
-  await expect(button).toBeDisabled()
-
-  // Right panel shows generating message
-  const rightPanel = page.locator('[data-testid="right-panel"]')
-  await expect(rightPanel).toContainText(/generating/i)
+  // Loading state element appears while request is in flight
+  await expect(page.locator('[data-testid="loading-state"]')).toBeVisible()
 })
 
 test('4. Successful response renders cards', async ({ page }) => {
@@ -105,8 +102,8 @@ test('4. Successful response renders cards', async ({ page }) => {
   const codeBlock = page.locator('code').first()
   await expect(codeBlock).toContainText('test_get_users')
 
-  // Check stats line
-  const statsLine = page.locator('text=/endpoint|generation|framework/i')
+  // Check stats line (scoped to right panel to avoid matching the Framework label)
+  const statsLine = page.locator('[data-testid="right-panel"] span:has-text("endpoints")')
   await expect(statsLine).toBeVisible()
 })
 

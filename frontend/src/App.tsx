@@ -175,7 +175,7 @@ function App() {
 
             {/* Loading State */}
             {loading && (
-              <div className="flex flex-col items-center justify-center h-full gap-4">
+              <div data-testid="loading-state" className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="font-['JetBrains_Mono',monospace] text-sm text-gray-500">
                   <span className="text-[#00ff88]">$</span> generating test cases
                   <span className="terminal-cursor" />
